@@ -39,6 +39,7 @@ from networkx.algorithms.connectivity.edge_augmentation import k_edge_augmentati
 from prepare_network import maybe_adjust_costs_and_potentials
 from pypsa.geo import haversine_pts
 from scipy.stats import beta
+from sectors import industry
 
 spatial = SimpleNamespace()
 logger = logging.getLogger(__name__)
@@ -3164,6 +3165,21 @@ def add_industry(n, costs):
         pd.read_csv(snakemake.input.industrial_demand, index_col=0) * 1e6
     ) * nyears
 
+    industrial_production = (
+        pd.read_csv(snakemake.input.industrial_production, index_col=0)
+        * 1e3
+        * nyears  # kt/a -> t/a
+    )
+
+    n = industry.add_steel(
+        n,
+        industrial_production,
+        costs,
+        nodes,
+        nhours,
+        options,
+    )
+
     n.add(
         "Bus",
         spatial.biomass.industry,
@@ -4514,9 +4530,11 @@ if __name__ == "__main__":
 
         snakemake = mock_snakemake(
             "prepare_sector_network",
+            configfiles="config/test/config.overnight.yaml",
+            simpl="",
+            clusters="5",
+            ll="v1.5",
             opts="",
-            clusters="38",
-            ll="vopt",
             sector_opts="",
             planning_horizons="2030",
         )

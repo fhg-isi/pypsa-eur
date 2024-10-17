@@ -249,10 +249,13 @@ if __name__ == "__main__":
 
         snakemake = mock_snakemake(
             "plot_power_network",
+            configfiles="config/test/config.overnight.yaml",
+            simpl="",
+            planning_horizons="2030",
             opts="",
-            clusters="37",
-            ll="v1.0",
-            sector_opts="4380H-T-H-B-I-A-dist1",
+            clusters="5",
+            ll="v1.5",
+            sector_opts="",
         )
 
     configure_logging(snakemake)
